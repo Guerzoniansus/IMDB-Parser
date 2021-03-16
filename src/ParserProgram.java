@@ -1,4 +1,5 @@
 import file_utils.*;
+import parsers.MoviesParser;
 import parsers.Parser;
 import parsers.TestParser;
 
@@ -21,6 +22,7 @@ public class ParserProgram {
         parsers = new ArrayList<>();
 
         parsers.add(new Parser("test.tsv", new TestParser()));
+        parsers.add(new Parser("movie.tsv", new MoviesParser()));
 
         // parsers.add(new Parser("ratings.tsv", new RatingsParser()));
         // parsers.add(new Parser("movies.tsv", new MoviesParser()));

@@ -16,11 +16,11 @@ public class ParserProgram {
 
     public ParserProgram() {
         loader = FileLoader.getInstance();
-        saver = saver = FileSaver.getInstance();
+        saver = FileSaver.getInstance();
 
         parsers = new ArrayList<>();
 
-        parsers.add(new Parser("test.tsv", new TestParser()));
+        parsers.add(new Parser("test.tsv", new TestParser(), "test.csv"));
 
         // parsers.add(new Parser("ratings.tsv", new RatingsParser()));
         // parsers.add(new Parser("movies.tsv", new MoviesParser()));
@@ -54,7 +54,7 @@ public class ParserProgram {
 
             data = parser.parse(data);
 
-            saver.saveFile(parser.getFileName(), data, saverStrategy);
+            saver.saveFile(parser.getOutputFileName(), data, saverStrategy);
 
             System.out.println("Finished parsing " + parser.getFileName());
         }

@@ -10,7 +10,7 @@ public class TitleParser implements ParserStrategy {
 
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
 
-        List<String> newData = removeGenre(data);
+        List<String> newData = removeGenre(data); // remove genre from data
 
         newData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab

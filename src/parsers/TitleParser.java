@@ -1,5 +1,6 @@
 package parsers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TitleParser implements ParserStrategy {
@@ -7,18 +8,19 @@ public class TitleParser implements ParserStrategy {
 
     @Override
     public List<String> parse(List<String> data) {
-
+        List<String> filteredData;
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
 
-        List<String> newData = removeGenre(data); // remove genre from data
+        filteredData = removeGenre(removeSeries(data)); // remove genre and series from data
 
-        newData.replaceAll(line -> {
+
+        filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
 
             return String.join(",", items);
         });
 
-        return newData;
+        return filteredData;
 
     }
 
@@ -30,5 +32,14 @@ public class TitleParser implements ParserStrategy {
             return String.join("\t", items);
         });
         return data;
+    }
+
+    private List<String> removeSeries(List<String> data) {
+        List<String> result = new ArrayList<>();
+        for (String str : data) {
+            if (!(str.contains("tvSeries") || str.contains("tvEpisode") || str.contains("tvMiniSeries")))
+                result.add(str);
+        }
+        return result;
     }
 }

@@ -9,9 +9,9 @@ public class ActorsParser implements ParserStrategy {
         List<String> filteredData = new ArrayList<>();
 
         //if data[i] does not contain actor or actress remove line from data.
-        for (String s : data) {
-            if(s.contains("actor") || s.contains("actress"))
-                filteredData.add(s);
+        for (String str : data) {
+            if(str.contains("actor") || str.contains("actress"))
+                filteredData.add(str);
         }
 
         filteredData.replaceAll(line -> {

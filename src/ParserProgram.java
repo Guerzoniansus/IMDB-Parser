@@ -44,6 +44,9 @@ public class ParserProgram {
 
             if (fileName.endsWith(".tsv")) {
                 data = loader.loadFile(fileName, new LoaderTSVStrategy());
+            } else if(fileName.endsWith(".list")) {
+                data = loader.loadFile(fileName, new LoaderListStrategy());
+
             }
 
             else {

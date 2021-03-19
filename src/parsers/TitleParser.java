@@ -22,8 +22,8 @@ public class TitleParser implements ParserStrategy {
         filteredData.set(0, filteredData.get(0) + "country\tMPAA");
 
         String tableHeading = filteredData.get(0);
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), moviesAndCountries, tableHeading); // add countries to filtered data
 
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), moviesAndCountries, tableHeading); // add countries to filtered data
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMPAA(MPAAFile), tableHeading); // add MPAA to filtered data
 
         filteredData.replaceAll(line -> {
@@ -33,7 +33,6 @@ public class TitleParser implements ParserStrategy {
                 if (items[i].contains(",")) {
                     items[i] = "\"" + items[i] + "\"";
                 }
-
             }
             return String.join((","), items);
         });
@@ -141,7 +140,7 @@ public class TitleParser implements ParserStrategy {
                     else {
                         checkedTitles.add(name);
                         String oldData = titles.get(name);
-                        String newData = oldData + value+"\t";
+                        String newData = oldData + value + "\t";
                         titles.put(name, newData);
                     }
                 }
@@ -166,6 +165,7 @@ public class TitleParser implements ParserStrategy {
 
     /**
      * Create a hashmap from list
+     *
      * @param data = list to put in hashmap
      * @return a hashmap with movie title as key and the data as value
      */

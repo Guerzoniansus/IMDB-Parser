@@ -18,20 +18,13 @@ public class TitleParser implements ParserStrategy {
 
         List<String> filteredData;
         filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-        filteredData.set(0, filteredData.get(0) + "country");
-        HashMap<String, String> titles = new HashMap<>();
 
-        int lineCount = 0;
-        for (String line : filteredData) {
-            if (lineCount > 0) {
-                String name = line.split("\t")[3];
-                titles.put(name, line);
-            }
-            if (lineCount < 1)
-                lineCount++;
-        }
+        filteredData.set(0, filteredData.get(0) + "country\tMPAA");
+
         String tableHeading = filteredData.get(0);
-        filteredData = getListMergedWithCountries(titles, moviesAndCountries, tableHeading);
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), moviesAndCountries, tableHeading); // add countries to filtered data
+
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMPAA(MPAAFile), tableHeading); // add MPAA to filtered data
 
         filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
@@ -40,15 +33,17 @@ public class TitleParser implements ParserStrategy {
                 if (items[i].contains(",")) {
                     items[i] = "\"" + items[i] + "\"";
                 }
+
             }
-            return String.join(",", items);
+            return String.join((","), items);
         });
 
-        return getMPAA(MPAAFile);
+        return filteredData;
     }
 
     /**
      * create a list of strings containing title and MPAA rating
+     *
      * @param data list disorganized data
      * @return a organised list with title and MPAA rating per line
      */
@@ -80,8 +75,9 @@ public class TitleParser implements ParserStrategy {
 
     /**
      * remove all genres from list
+     *
      * @param data list with movie title information
-     * @return a list without genres
+     * @return the same list without genres
      */
     private List<String> getListWithoutGenre(List<String> data) {
         data.replaceAll(line -> {
@@ -95,6 +91,7 @@ public class TitleParser implements ParserStrategy {
 
     /**
      * remove all series from list
+     *
      * @param data list with movie title information
      * @return a list without series
      */
@@ -108,7 +105,6 @@ public class TitleParser implements ParserStrategy {
     }
 
     /**
-     *
      * @param data = countries.list
      * @return a list with: moviename and region
      */
@@ -125,26 +121,27 @@ public class TitleParser implements ParserStrategy {
     }
 
     /**
-     * merge countries with tilte data
-     * @param titles hashmap with titles and data
-     * @param countries list with title and country
+     * merge given data with tilte data
+     *
+     * @param titles       hashmap with titles and data
+     * @param data         list with title and country
      * @param tableHeading heading for the data (id, title, etc..)
-     * @return a list with countries added to the title data
+     * @return a list with given data added to the title data
      */
-    private List<String> getListMergedWithCountries(HashMap<String, String> titles, List<String> countries, String tableHeading) {
-        HashSet<String> checkedCountryTitles = new HashSet<>();
+    private List<String> mergeTitlesWithData(HashMap<String, String> titles, List<String> data, String tableHeading) {
+        HashSet<String> checkedTitles = new HashSet<>();
         int lineCount = 0;
-        for (String line : countries) {
+        for (String line : data) {
             if (lineCount > 14) { // data starts at line 15
                 String name = line.split("\t")[0];
-                String country = line.split("\t")[1];
+                String value = line.split("\t")[1];
                 if (titles.containsKey(name)) {
-                    if (checkedCountryTitles.contains(name))
+                    if (checkedTitles.contains(name))
                         continue;
                     else {
-                        checkedCountryTitles.add(name);
+                        checkedTitles.add(name);
                         String oldData = titles.get(name);
-                        String newData = oldData + country;
+                        String newData = oldData + value+"\t";
                         titles.put(name, newData);
                     }
                 }
@@ -154,9 +151,9 @@ public class TitleParser implements ParserStrategy {
         }
 
         titles.forEach((index, value) -> {
-            if (!checkedCountryTitles.contains(index)) {
-                checkedCountryTitles.add(index);
-                String newData = value + "\\N";
+            if (!checkedTitles.contains(index)) {
+                checkedTitles.add(index);
+                String newData = value + "\\N\t";
                 titles.put(index, newData);
             }
         });
@@ -164,6 +161,25 @@ public class TitleParser implements ParserStrategy {
         ArrayList<String> result = new ArrayList<>(titles.values());
         result.add(tableHeading);
         Collections.sort(result);
+        return result;
+    }
+
+    /**
+     * Create a hashmap from list
+     * @param data = list to put in hashmap
+     * @return a hashmap with movie title as key and the data as value
+     */
+    private HashMap<String, String> getTitleHashmap(List<String> data) {
+        HashMap<String, String> result = new HashMap<>();
+        int lineCount = 0;
+        for (String line : data) {
+            if (lineCount > 0) {
+                String name = line.split("\t")[3];
+                result.put(name, line);
+            }
+            if (lineCount < 1)
+                lineCount++;
+        }
         return result;
     }
 }

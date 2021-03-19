@@ -47,60 +47,57 @@ public class TitleParser implements ParserStrategy {
         return getMPAA(MPAAFile);
     }
 
+    /**
+     * create a list of strings containing title and MPAA rating
+     * @param data list disorganized data
+     * @return a organised list with title and MPAA rating per line
+     */
     private List<String> getMPAA(List<String> data) {
         List<String> MPAAList = new ArrayList<>();
 
-        String REregex = "RE:(.)";
-        String MVregex = "MV:(.)";
-        String regexParantheses = " \\W\\S";
+        String MVregex = "MV:(.)"; // regex for splitting movie title
+        String REregex = "RE:(.)"; // regex for splitting review
+        String regexParantheses = " \\W\\S"; // regex for removing (year)
 
-        StringBuilder test = new StringBuilder();
-
+        StringBuilder newLine = new StringBuilder();
 
         for (String line : data) {
             String[] items;
-
             if (line.contains("MV:")) {
-                if (!test.isEmpty())
-                    MPAAList.add(test.toString());
+                if (!newLine.isEmpty())
+                    MPAAList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
                 String title = items[1].split(regexParantheses)[0];
-                test = new StringBuilder(title + "\t");
+                newLine = new StringBuilder(title + "\t");
             }
             if (line.contains("RE:")) {
                 String rating = line.split(REregex)[1];
-                test.append(rating);
+                newLine.append(rating);
             }
         }
         return MPAAList;
-
-//        data.replaceAll(line -> {
-//
-//
-//            if (line.contains("MV:"))
-//                MV = items[1];
-//
-//            MPAAList.add(items[1]);
-//
-////            for (int i = 0; i < items.length; i++) {
-////                if (items[i].contains(",")) {
-////                    items[i] = "\"" + items[i] + "\"";
-////                }
-////            }
-//            return String.join(",", items);
-//        });
     }
 
+    /**
+     * remove all genres from list
+     * @param data list with movie title information
+     * @return a list without genres
+     */
     private List<String> getListWithoutGenre(List<String> data) {
         data.replaceAll(line -> {
             String[] items = line.split("\t");
-            items[items.length - 1] = "";
+            items[items.length - 1] = ""; // remove the last element from the line (genre)
 
             return String.join("\t", items);
         });
         return data;
     }
 
+    /**
+     * remove all series from list
+     * @param data list with movie title information
+     * @return a list without series
+     */
     private List<String> getListWithoutSeries(List<String> data) {
         List<String> result = new ArrayList<>();
         for (String str : data) {
@@ -110,6 +107,11 @@ public class TitleParser implements ParserStrategy {
         return result;
     }
 
+    /**
+     *
+     * @param data = countries.list
+     * @return a list with: moviename and region
+     */
     private List<String> getMovieAndCountry(List<String> data) {
         List<String> result = new ArrayList<>();
         final String regex = " \\W\\S";
@@ -122,6 +124,13 @@ public class TitleParser implements ParserStrategy {
         return result;
     }
 
+    /**
+     * merge countries with tilte data
+     * @param titles hashmap with titles and data
+     * @param countries list with title and country
+     * @param tableHeading heading for the data (id, title, etc..)
+     * @return a list with countries added to the title data
+     */
     private List<String> getListMergedWithCountries(HashMap<String, String> titles, List<String> countries, String tableHeading) {
         HashSet<String> checkedCountryTitles = new HashSet<>();
         int lineCount = 0;

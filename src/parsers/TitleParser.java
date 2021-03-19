@@ -4,8 +4,6 @@ import file_utils.FileLoader;
 import file_utils.LoaderListStrategy;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TitleParser implements ParserStrategy {
 
@@ -13,24 +11,27 @@ public class TitleParser implements ParserStrategy {
     @Override
     public List<String> parse(List<String> data) {
         List<String> countryFile = FileLoader.getInstance().loadFile("countries.list", new LoaderListStrategy());
+        List<String> MPAAFile = FileLoader.getInstance().loadFile("mpaa-ratings-reasons.list", new LoaderListStrategy());
         List<String> moviesAndCountries = getMovieAndCountry(countryFile);
 
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
 
-
         List<String> filteredData;
-        filteredData = removeGenre(removeSeries(data)); // remove genre and series from data
+        filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
         filteredData.set(0, filteredData.get(0) + "country");
         HashMap<String, String> titles = new HashMap<>();
 
+        int lineCount = 0;
         for (String line : filteredData) {
-            String name = line.split("\t")[3];
-            titles.put(name, line);
+            if (lineCount > 0) {
+                String name = line.split("\t")[3];
+                titles.put(name, line);
+            }
+            if (lineCount < 1)
+                lineCount++;
         }
-
-
-        filteredData = addCountriesToList(titles, moviesAndCountries);
-
+        String tableHeading = filteredData.get(0);
+        filteredData = getListMergedWithCountries(titles, moviesAndCountries, tableHeading);
 
         filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
@@ -40,15 +41,57 @@ public class TitleParser implements ParserStrategy {
                     items[i] = "\"" + items[i] + "\"";
                 }
             }
-
             return String.join(",", items);
         });
 
-        return filteredData;
-
+        return getMPAA(MPAAFile);
     }
 
-    private List<String> removeGenre(List<String> data) {
+    private List<String> getMPAA(List<String> data) {
+        List<String> MPAAList = new ArrayList<>();
+
+        String REregex = "RE:(.)";
+        String MVregex = "MV:(.)";
+        String regexParantheses = " \\W\\S";
+
+        StringBuilder test = new StringBuilder();
+
+
+        for (String line : data) {
+            String[] items;
+
+            if (line.contains("MV:")) {
+                if (!test.isEmpty())
+                    MPAAList.add(test.toString());
+                items = line.split(MVregex); // Splits per tab
+                String title = items[1].split(regexParantheses)[0];
+                test = new StringBuilder(title + "\t");
+            }
+            if (line.contains("RE:")) {
+                String rating = line.split(REregex)[1];
+                test.append(rating);
+            }
+        }
+        return MPAAList;
+
+//        data.replaceAll(line -> {
+//
+//
+//            if (line.contains("MV:"))
+//                MV = items[1];
+//
+//            MPAAList.add(items[1]);
+//
+////            for (int i = 0; i < items.length; i++) {
+////                if (items[i].contains(",")) {
+////                    items[i] = "\"" + items[i] + "\"";
+////                }
+////            }
+//            return String.join(",", items);
+//        });
+    }
+
+    private List<String> getListWithoutGenre(List<String> data) {
         data.replaceAll(line -> {
             String[] items = line.split("\t");
             items[items.length - 1] = "";
@@ -58,7 +101,7 @@ public class TitleParser implements ParserStrategy {
         return data;
     }
 
-    private List<String> removeSeries(List<String> data) {
+    private List<String> getListWithoutSeries(List<String> data) {
         List<String> result = new ArrayList<>();
         for (String str : data) {
             if (!(str.contains("tvSeries") || str.contains("tvEpisode") || str.contains("tvMiniSeries")))
@@ -79,7 +122,7 @@ public class TitleParser implements ParserStrategy {
         return result;
     }
 
-    private List<String> addCountriesToList(HashMap<String, String> titles, List<String> countries) {
+    private List<String> getListMergedWithCountries(HashMap<String, String> titles, List<String> countries, String tableHeading) {
         HashSet<String> checkedCountryTitles = new HashSet<>();
         int lineCount = 0;
         for (String line : countries) {
@@ -110,6 +153,7 @@ public class TitleParser implements ParserStrategy {
         });
 
         ArrayList<String> result = new ArrayList<>(titles.values());
+        result.add(tableHeading);
         Collections.sort(result);
         return result;
     }

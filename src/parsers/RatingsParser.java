@@ -11,6 +11,7 @@ public class RatingsParser implements ParserStrategy {
 
         data.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
+            data.set(0, data.get(0).replace("tconst", "TitleID"));
 
             return String.join(",", items);
         });

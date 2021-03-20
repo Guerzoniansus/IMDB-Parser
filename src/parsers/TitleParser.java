@@ -12,7 +12,7 @@ public class TitleParser implements ParserStrategy {
     public List<String> parse(List<String> data) {
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
         List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-        filteredData.set(0, filteredData.get(0) + "country\tMPAA\tcost"); // add columns
+        filteredData.set(0, filteredData.get(0) + "country\tMPAA\tcost\tplot"); // add columns
 
         String tableHeading = filteredData.get(0);
 
@@ -26,6 +26,10 @@ public class TitleParser implements ParserStrategy {
 
         List<String> businessFile = FileLoader.getInstance().loadFile("business.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getBudget(businessFile), tableHeading); // add budget to filtered data
+
+//        List<String> plotFile = FileLoader.getInstance().loadFile("plot.list", new LoaderListStrategy());
+
+//        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getPlot(plotFile), tableHeading); // add budget to filtered data
 
 
         filteredData.replaceAll(line -> {
@@ -74,6 +78,35 @@ public class TitleParser implements ParserStrategy {
         return MPAAList;
     }
 
+    private List<String> getPlot(List<String> data) {
+
+        List<String> plotList = new ArrayList<>();
+
+        String MVregex = "MV:(.)"; // regex for splitting movie title
+        String PLregex = "PL:(.)"; // regex for splitting review
+        String regexParentheses = " \\W\\S"; // regex for removing (year)
+
+        StringBuilder newLine = new StringBuilder();
+
+        for (String line : data) {
+            String[] items;
+            if (line.contains("MV:")) {
+                if (!newLine.isEmpty())
+                    plotList.add(newLine.toString());
+                items = line.split(MVregex); // Splits per tab
+                String title = items[1].split(regexParentheses)[0];
+                newLine = new StringBuilder(title + "\t");
+            }
+            if (line.contains("PL: ")) {
+                if (line.split(PLregex).length > 1) {
+                    String plot = line.split(PLregex)[1];
+                    newLine.append(plot);
+                }
+            }
+        }
+        return plotList;
+    }
+
     /**
      * create a list of strings containing title and MPAA rating
      *
@@ -111,7 +144,7 @@ public class TitleParser implements ParserStrategy {
         for (String line : budgetList) {
             String[] items = line.split("\t"); // Splits per tab
             if (movieHasBudget(items)) {
-                String currency = items[1].split(" ")[0]; // get
+                String currency = items[1].split(" ")[0]; // get currency (EUR, USD, GBP,...)
                 String amount = items[1].split(" ")[1];
 
                 result.add(items[0] + "\t" + convertCurrencyToUSD(currency, amount.replace(",", "")));
@@ -126,7 +159,7 @@ public class TitleParser implements ParserStrategy {
 
     private String convertCurrencyToUSD(String currency, String amount) {
         return switch (currency) {
-            case "USD" -> amount.toString();
+            case "USD" -> amount;
             case "AUD" -> String.valueOf(Double.parseDouble(amount) * 0.77);
             case "EUR" -> String.valueOf(Double.parseDouble(amount) * 1.90);
             case "CAD" -> String.valueOf(Double.parseDouble(amount) * 0.80);

@@ -10,21 +10,23 @@ public class TitleParser implements ParserStrategy {
 
     @Override
     public List<String> parse(List<String> data) {
-        List<String> countryFile = FileLoader.getInstance().loadFile("countries.list", new LoaderListStrategy());
-        List<String> MPAAFile = FileLoader.getInstance().loadFile("mpaa-ratings-reasons.list", new LoaderListStrategy());
-        List<String> moviesAndCountries = getMovieAndCountry(countryFile);
-
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
-
-        List<String> filteredData;
-        filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-
-        filteredData.set(0, filteredData.get(0) + "country\tMPAA");
+        List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
+        filteredData.set(0, filteredData.get(0) + "country\tMPAA\tcost"); // add columns
 
         String tableHeading = filteredData.get(0);
 
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), moviesAndCountries, tableHeading); // add countries to filtered data
+        List<String> countryFile = FileLoader.getInstance().loadFile("countries.list", new LoaderListStrategy());
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMovieAndCountry(countryFile), tableHeading); // add countries to filtered data
+
+
+        List<String> MPAAFile = FileLoader.getInstance().loadFile("mpaa-ratings-reasons.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMPAA(MPAAFile), tableHeading); // add MPAA to filtered data
+
+
+        List<String> businessFile = FileLoader.getInstance().loadFile("business.list", new LoaderListStrategy());
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getBudget(businessFile), tableHeading); // add budget to filtered data
+
 
         filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
@@ -51,7 +53,7 @@ public class TitleParser implements ParserStrategy {
 
         String MVregex = "MV:(.)"; // regex for splitting movie title
         String REregex = "RE:(.)"; // regex for splitting review
-        String regexParantheses = " \\W\\S"; // regex for removing (year)
+        String regexParentheses = " \\W\\S"; // regex for removing (year)
 
         StringBuilder newLine = new StringBuilder();
 
@@ -61,7 +63,7 @@ public class TitleParser implements ParserStrategy {
                 if (!newLine.isEmpty())
                     MPAAList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
-                String title = items[1].split(regexParantheses)[0];
+                String title = items[1].split(regexParentheses)[0];
                 newLine = new StringBuilder(title + "\t");
             }
             if (line.contains("RE:")) {
@@ -70,6 +72,68 @@ public class TitleParser implements ParserStrategy {
             }
         }
         return MPAAList;
+    }
+
+    /**
+     * create a list of strings containing title and MPAA rating
+     *
+     * @param data list disorganized data
+     * @return a organised list with title and MPAA rating per line
+     */
+    private List<String> getBudget(List<String> data) {
+        List<String> budgetList = new ArrayList<>();
+
+        String MVregex = "MV:(.)"; // regex for splitting movie title
+        String REregex = "BT:(.)"; // regex for splitting review
+        String regexParentheses = " \\W\\S"; // regex for removing (year)
+
+        StringBuilder newLine = new StringBuilder();
+
+        for (String line : data) {
+            String[] items;
+
+            if (line.contains("MV:")) {
+                if (!newLine.isEmpty())
+                    budgetList.add(newLine.toString());
+
+                items = line.split(MVregex); // Split string on mv
+                String title = items[1].split(regexParentheses)[0]; // get string between "MV: " and  "("
+                newLine = new StringBuilder(title + "\t");
+            }
+
+            if (line.contains("BT:")) {
+                String budget = line.split(REregex)[1]; // get string after BT:
+                newLine.append(budget);
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String line : budgetList) {
+            String[] items = line.split("\t"); // Splits per tab
+            if (movieHasBudget(items)) {
+                String currency = items[1].split(" ")[0]; // get
+                String amount = items[1].split(" ")[1];
+
+                result.add(items[0] + "\t" + convertCurrencyToUSD(currency, amount.replace(",", "")));
+            }
+        }
+        return result;
+    }
+
+    private Boolean movieHasBudget(String[] data) {
+        return (data.length > 1);
+    }
+
+    private String convertCurrencyToUSD(String currency, String amount) {
+        return switch (currency) {
+            case "USD" -> amount.toString();
+            case "AUD" -> String.valueOf(Double.parseDouble(amount) * 0.77);
+            case "EUR" -> String.valueOf(Double.parseDouble(amount) * 1.90);
+            case "CAD" -> String.valueOf(Double.parseDouble(amount) * 0.80);
+            case "INR" -> String.valueOf(Double.parseDouble(amount) * 0.014);
+            case "GBP" -> String.valueOf(Double.parseDouble(amount) * 1.39);
+            default -> "\\n";
+        };
     }
 
     /**
@@ -97,7 +161,7 @@ public class TitleParser implements ParserStrategy {
     private List<String> getListWithoutSeries(List<String> data) {
         List<String> result = new ArrayList<>();
         for (String str : data) {
-            if (!(str.contains("tvSeries") || str.contains("tvEpisode") || str.contains("tvMiniSeries")))
+            if (!(str.contains("tvSeries") || str.contains("tvEpisode") || str.contains("tvMiniSeries") || str.contains("short")))
                 result.add(str);
         }
         return result;
@@ -134,6 +198,7 @@ public class TitleParser implements ParserStrategy {
             if (lineCount > 14) { // data starts at line 15
                 String name = line.split("\t")[0];
                 String value = line.split("\t")[1];
+
                 if (titles.containsKey(name)) {
                     if (checkedTitles.contains(name))
                         continue;
@@ -182,4 +247,24 @@ public class TitleParser implements ParserStrategy {
         }
         return result;
     }
+
+    private List<String> getAmountOfValues(List<String> data) {
+
+        List<String> result = new ArrayList<>();
+        HashMap<String, Integer> map = new HashMap<>();
+        for (String line : data) {
+            String[] item1 = line.split("\t");
+            String[] item = item1[item1.length - 1].split(" ");
+            if (map.containsKey(item[0]))
+                map.put(item[0], map.get(item[0]) + 1);
+            else
+                map.put(item[0], 1);
+        }
+        map.forEach((index, value) -> {
+            result.add(index + "," + value);
+        });
+
+        return result;
+    }
+
 }

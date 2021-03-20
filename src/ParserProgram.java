@@ -22,10 +22,10 @@ public class ParserProgram {
 
         parsers = new ArrayList<>();
 
-        parsers.add(new Parser("test.tsv", new TestParser(), "test.csv"));
+        //parsers.add(new Parser("test.tsv", new TestParser(), "test.csv"));
         //parsers.add(new Parser("test.tsv", new TestParser()));
         //parsers.add(new Parser("ratings.tsv", new RatingsParser()));
-        parsers.add(new Parser("title_principals.tsv", new ActorParser()));
+        parsers.add(new Parser("title_principals.tsv", new ActorParser(), "title_principals.csv"));
 
         // parsers.add(new Parser("ratings.tsv", new RatingsParser()));
         // parsers.add(new Parser("movies.tsv", new MoviesParser()));

@@ -6,10 +6,12 @@ public class Parser {
 
     protected ParserStrategy parserStrategy;
     protected String fileName;
+    protected String outputFileName;
 
-    public Parser(String fileName, ParserStrategy parserStrategy) {
+    public Parser(String fileName, ParserStrategy parserStrategy, String outputFileName) {
         this.fileName = fileName;
         this.parserStrategy = parserStrategy;
+        this.outputFileName = outputFileName;
     }
 
     /**
@@ -37,5 +39,11 @@ public class Parser {
     public void setParserStrategy(ParserStrategy strategy) {
         this.parserStrategy = strategy;
     }
+
+    /**
+     * Get the output file name intended for this parser
+     * @return File name to be used for the output file
+     */
+    public String getOutputFileName() { return outputFileName; }
 
 }

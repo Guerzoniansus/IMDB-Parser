@@ -3,6 +3,10 @@ package file_utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+/**
+ * Class that contains a BufferedReader to read a text file
+ * but encapsulates the object itself with a simple interface
+ */
 public class DataFile {
 
     private final String filePath = "input-files/";
@@ -10,6 +14,10 @@ public class DataFile {
 
     BufferedReader reader;
 
+    /**
+     * Tries to open a new text file
+     * @param fileName The file name of the text file to open
+     */
     public DataFile(String fileName) {
 
         this.fileName = fileName;

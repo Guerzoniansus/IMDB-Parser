@@ -1,10 +1,7 @@
 package program;
 
 import file_utils.*;
-import parsers.ActorNameParser;
-import parsers.OldParser;
-import parsers.Parser;
-import parsers.ParserStrategy;
+import parsers.*;
 
 
 import java.util.ArrayList;
@@ -41,20 +38,37 @@ public class ParserProgram {
      * Parse all files
      */
     public void parseEverything() {
-
         parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
+    }
+
+    /**
+     * Parses a file and returns parsed data
+     * @param fileName The file name to parse
+     * @param outputData The list in which to insert the parsed data
+     * @param parser The parser strategy to use
+     * @return The parsed data
+     */
+    public static void parseFile(String fileName, Collection<String> outputData, ParserStrategy parser) {
+
+        doParseProcess(fileName, parser, parsedLine -> {
+            // Null means the parser thinks it should get filtered out
+            if (parsedLine != null) {
+                outputData.add(parsedLine);
+            }
+        });
+
     }
 
     /**
      * Parse a file and save it afterwards
      * @param fileName The file to parse
      * @param outputFileName The name for the output file
-     * @param parserStrategy The parser strategy to use
+     * @param parser The parser strategy to use
      */
-    public static void parseFile(String fileName, String outputFileName, ParserStrategy parserStrategy) {
+    public static void parseFile(String fileName, String outputFileName, ParserStrategy parser) {
         SaveFile saveFile = new SaveFile(outputFileName);
 
-        doParseProcess(fileName, parserStrategy, parsedLine -> {
+        doParseProcess(fileName, parser, parsedLine -> {
             // Null means the parser thinks it should get filtered out
             if (parsedLine != null) {
                 saveFile.addLine(parsedLine);
@@ -65,34 +79,15 @@ public class ParserProgram {
     }
 
     /**
-     * Parses a file and returns parsed data
-     * @param fileName The file name to parse
-     * @param outputData The list in which to insert the parsed data
-     * @param parserStrategy The parser strategy to use
-     * @return The parsed data
-     */
-    public static void parseFile(String fileName, Collection<String> outputData, ParserStrategy parserStrategy) {
-
-        doParseProcess(fileName, parserStrategy, parsedLine -> {
-            // Null means the parser thinks it should get filtered out
-            if (parsedLine != null) {
-                outputData.add(parsedLine);
-            }
-        });
-
-    }
-
-    /**
      * Do the actual parsing process. ProcessParsedLineFunction is a function that gets called after every line parse.
      * @param fileName The file name to parse
-     * @param parserStrategy The parser strategy to use
+     * @param parser The parser strategy to use
      * @param processParsedLineFunction The method to run on each parsed line, giving the parsed line as argument
      */
-    private static void doParseProcess(String fileName, ParserStrategy parserStrategy, Consumer<String> processParsedLineFunction) {
+    private static void doParseProcess(String fileName, ParserStrategy parser, Consumer<String> processParsedLineFunction) {
         System.out.println("Trying to parse " + fileName);
 
         DataFile inputFile = new DataFile(fileName);
-        Parser parser = new Parser(parserStrategy);
 
         String line = null;
 

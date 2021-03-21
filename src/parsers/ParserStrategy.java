@@ -1,5 +1,8 @@
 package parsers;
 
+/**
+ * An interface for different ways of parsing text
+ */
 public interface ParserStrategy {
 
     /**

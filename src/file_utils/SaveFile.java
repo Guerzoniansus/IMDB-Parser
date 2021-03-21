@@ -15,8 +15,8 @@ public class SaveFile {
     FileWriter writer;
 
     /**
-     * Creates or opens a new text file
-     * @param fileName
+     * Creates or opens a (new) text file
+     * @param fileName The file name of the output text file
      */
     public SaveFile(String fileName) {
         this.fileName = fileName;
@@ -36,7 +36,10 @@ public class SaveFile {
     public void addLine(String line) {
         try {
             writer.append(line);
-            writer.append("\n");
+
+            if (line.endsWith("\n") == false) {
+                writer.append("\n");
+            }
         }
 
         catch (Exception e) {
@@ -53,7 +56,10 @@ public class SaveFile {
         try {
             for (String line : text) {
                 writer.append(line);
-                writer.append("\n");
+
+                if (line.endsWith("\n") == false) {
+                    writer.append("\n");
+                }
             }
         }
 

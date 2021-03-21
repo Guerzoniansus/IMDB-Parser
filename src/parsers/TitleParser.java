@@ -32,7 +32,7 @@ public class TitleParser implements ParserStrategy {
 
         // Hier komt je nieuwe code, je krijgt telkens een nieuwe regel
 
-//        System.out.println("hallo");
+
 
 
         return null;

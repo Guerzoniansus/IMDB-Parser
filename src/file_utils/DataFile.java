@@ -2,6 +2,8 @@ package file_utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that contains a BufferedReader to read a text file
@@ -16,6 +18,7 @@ public class DataFile {
 
     /**
      * Tries to open a new text file
+     *
      * @param fileName The file name of the text file to open
      */
     public DataFile(String fileName) {
@@ -24,9 +27,7 @@ public class DataFile {
 
         try {
             reader = new BufferedReader(new FileReader(filePath + fileName));
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Something went wrong trying to load " + fileName);
             System.out.println(e);
         }
@@ -34,14 +35,13 @@ public class DataFile {
 
     /**
      * Read the next line from the text file
+     *
      * @return The next line, or null if there are no lines left
      */
     public String readLine() {
         try {
             return reader.readLine();
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Could not read from " + fileName);
             System.out.println(e);
         }
@@ -51,11 +51,25 @@ public class DataFile {
 
     /**
      * Get this data file's file name
+     *
      * @return The file name
      */
     public String getFileName() {
         return fileName;
     }
 
+    public List<String> readAll() {
+        String line = null;
+        List<String> data = new ArrayList<>();
+        try {
+            while ((line = reader.readLine()) != null) {
+                data.add(line);
 
+            }
+        } catch (Exception e) {
+            System.out.println("Could not read from " + fileName);
+            System.out.println(e);
+        }
+        return data;
+    }
 }

@@ -1,61 +1,43 @@
 package parsers;
 
 
+import file_utils.DataFile;
+import file_utils.SaveFile;
 import program.ParserProgram;
 
 import java.util.*;
 
-public class TitleParser implements ParserStrategy {
+public class TitleParser implements WholeFileParserStrategy {
 
     List<String> countries;
+    ArrayList<String> MPAA;
+    ArrayList<String> costs;
+    ArrayList<String> plot;
+
 
     public TitleParser() {
         countries = new ArrayList<>();
+        MPAA = new ArrayList<>();
+        costs = new ArrayList<>();
+        plot = new ArrayList<>();
         ParserProgram.parseFile("countries.list", countries, new CountriesParser());
+        ParserProgram.parseFile("mpaa-ratings-reasons.list", MPAA, new MPAAParser());
+        ParserProgram.parseFile("business.list", costs, new CostsParser());
+        ParserProgram.parseFile("plot.list", plot, new PlotParser());
     }
-
 
     @Override
-    public String parse(String line) {
-
-        // Hier komt je nieuwe code, je krijgt telkens een nieuwe regel
-
-
-
-        return null;
-    }
-
-
-    // Oude code hieronder
-
-    public List<String> parse(List<String> data) {
+    public void parse(DataFile inputFile, SaveFile saveFile) {
+        List<String> data = inputFile.readAll();
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
         List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-        filteredData.set(0, filteredData.get(0) + "country\tMPAA\tcost\tplot"); // add columns
-
+        filteredData.set(0, filteredData.get(0) + "region\tMPAA\tcost\tplot"); // add columns
         String tableHeading = filteredData.get(0);
 
-        /*
-        List<String> countryFile = FileLoader.getInstance().loadFile("countries.list", new LoaderListStrategy());
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMovieAndCountry(countryFile), tableHeading); // add countries to filtered data
-
-        */
-
-
-
-        /*
-        List<String> MPAAFile = FileLoader.getInstance().loadFile("mpaa-ratings-reasons.list", new LoaderListStrategy());
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMPAA(MPAAFile), tableHeading); // add MPAA to filtered data
-
-
-        List<String> businessFile = FileLoader.getInstance().loadFile("business.list", new LoaderListStrategy());
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getBudget(businessFile), tableHeading); // add budget to filtered data
-         */
-
-//      List<String> plotFile = FileLoader.getInstance().loadFile("plot.list", new LoaderListStrategy());
-//
-//        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getPlot(plotFile), tableHeading); // add plot to filtered data
-
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), countries, tableHeading); // add countries to filtered data
+       filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), MPAA, tableHeading); // add MPAA to filtered data
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), costs, tableHeading); // add budget to filtered data
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), plot, tableHeading); // add plot to filtered data
 
         filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
@@ -67,142 +49,9 @@ public class TitleParser implements ParserStrategy {
             }
             return String.join((","), items);
         });
+        saveFile.addText((ArrayList<String>) filteredData);
+        saveFile.save();
 
-        return filteredData;
-    }
-
-    /**
-     * create a list of strings containing title and MPAA rating
-     *
-     * @param data list disorganized data
-     * @return a organised list with title and MPAA rating per line
-     */
-    private List<String> getMPAA(List<String> data) {
-        List<String> MPAAList = new ArrayList<>();
-
-        String MVregex = "MV:(.)"; // regex for splitting movie title
-        String REregex = "RE:(.)"; // regex for splitting review
-        String regexParentheses = " \\W\\S"; // regex for removing (year)
-
-        StringBuilder newLine = new StringBuilder();
-
-        for (String line : data) {
-            String[] items;
-            if (line.contains("MV:")) {
-                // if (!newLine.isEmpty())
-                    // MPAAList.add(newLine.toString());
-                items = line.split(MVregex); // Splits per tab
-                String title = items[1].split(regexParentheses)[0];
-                newLine = new StringBuilder(title + "\t");
-            }
-            if (line.contains("RE:")) {
-                String rating = line.split(REregex)[1];
-                newLine.append(rating);
-            }
-        }
-        return MPAAList;
-    }
-
-    private List<String> getPlot(List<String> data) {
-
-        List<String> plotList = new ArrayList<>();
-
-        String MVregex = "MV:(.)"; // regex for splitting movie title
-        String PLregex = "PL:(.)"; // regex for splitting review
-        String regexParentheses = " \\W\\S"; // regex for removing (year)
-
-        StringBuilder newLine = new StringBuilder();
-
-        for (String line : data) {
-            String[] items;
-            if (line.contains("MV:")) {
-                // if (!newLine.isEmpty())
-                    // plotList.add(newLine.toString());
-                items = line.split(MVregex); // Splits per tab
-                String title = items[1].split(regexParentheses)[0];
-                newLine = new StringBuilder(title + "\t");
-            }
-            if (line.contains("PL: ")) {
-                if (line.split(PLregex).length > 1) {
-                    String plot = line.split(PLregex)[1];
-                    newLine.append(plot);
-                }
-            }
-        }
-        return plotList;
-    }
-
-    /**
-     * create a list of strings containing title and MPAA rating
-     *
-     * @param data list disorganized data
-     * @return a organised list with title and MPAA rating per line
-     */
-    private List<String> getBudget(List<String> data) {
-        List<String> budgetList = new ArrayList<>();
-
-        String MVregex = "MV:(.)"; // regex for splitting movie title
-        String REregex = "BT:(.)"; // regex for splitting review
-        String regexParentheses = " \\W\\S"; // regex for removing (year)
-
-        StringBuilder newLine = new StringBuilder();
-
-        for (String line : data) {
-            String[] items;
-
-            if (line.contains("MV:")) {
-                // if (!newLine.isEmpty())
-                    // budgetList.add(newLine.toString());
-
-                items = line.split(MVregex); // Split string on mv
-                String title = items[1].split(regexParentheses)[0]; // get string between "MV: " and  "("
-                newLine = new StringBuilder(title + "\t");
-            }
-
-            if (line.contains("BT:")) {
-                String budget = line.split(REregex)[1]; // get string after BT:
-                newLine.append(budget);
-            }
-        }
-
-        List<String> result = new ArrayList<>();
-        for (String line : budgetList) {
-            String[] items = line.split("\t"); // Splits per tab
-            if (movieHasBudget(items)) {
-                String currency = items[1].split(" ")[0]; // get currency (EUR, USD, GBP,...)
-                String amount = items[1].split(" ")[1];
-
-                result.add(items[0] + "\t" + convertCurrencyToUSD(currency, amount.replace(",", "")));
-            }
-        }
-        return result;
-    }
-
-    private Boolean movieHasBudget(String[] data) {
-        return (data.length > 1);
-    }
-
-    private String convertCurrencyToUSD(String currency, String amount) {
-
-        String newCurrency;
-
-        switch (currency) {
-            case "USD": newCurrency = amount;
-                break;
-            case "AUD": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.77);
-                break;
-            case "EUR": newCurrency = String.valueOf(Double.parseDouble(amount) * 1.90);
-                break;
-            case "CAD": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.80);
-                break;
-            case "INR": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.014);
-                break;
-            case "GBP": newCurrency = String.valueOf(Double.parseDouble(amount) * 1.39);
-                break;
-            default: newCurrency = "\\n";
-        };
-
-        return newCurrency;
     }
 
     /**
@@ -237,22 +86,6 @@ public class TitleParser implements ParserStrategy {
     }
 
     /**
-     * @param data = countries.list
-     * @return a list with: moviename and region
-     */
-    private List<String> getMovieAndCountry(List<String> data) {
-        List<String> result = new ArrayList<>();
-        final String regex = " \\W\\S";
-        for (String movie : data) {
-            String movieName = movie.split(regex)[0];
-            String[] region = movie.split("\t");
-
-            result.add(movieName + "\t" + region[region.length - 1]);
-        }
-        return result;
-    }
-
-    /**
      * merge given data with tilte data
      *
      * @param titles       hashmap with titles and data
@@ -275,6 +108,7 @@ public class TitleParser implements ParserStrategy {
                         checkedTitles.add(name);
                         String oldData = titles.get(name);
                         String newData = oldData + value + "\t";
+
                         titles.put(name, newData);
                     }
                 }
@@ -317,23 +151,5 @@ public class TitleParser implements ParserStrategy {
         return result;
     }
 
-    private List<String> getAmountOfValues(List<String> data) {
-
-        List<String> result = new ArrayList<>();
-        HashMap<String, Integer> map = new HashMap<>();
-        for (String line : data) {
-            String[] item1 = line.split("\t");
-            String[] item = item1[item1.length - 1].split(" ");
-            if (map.containsKey(item[0]))
-                map.put(item[0], map.get(item[0]) + 1);
-            else
-                map.put(item[0], 1);
-        }
-        map.forEach((index, value) -> {
-            result.add(index + "," + value);
-        });
-
-        return result;
-    }
 
 }

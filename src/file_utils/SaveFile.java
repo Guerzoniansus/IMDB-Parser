@@ -57,7 +57,7 @@ public class SaveFile {
             for (String line : text) {
                 writer.append(line);
 
-                if (line.endsWith("\n") == false) {
+                if (!line.endsWith("\n")) {
                     writer.append("\n");
                 }
             }

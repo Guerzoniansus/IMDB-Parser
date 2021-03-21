@@ -1,14 +1,15 @@
 package parsers;
 
-import java.util.List;
-
+/**
+ * An interface for different ways of parsing text
+ */
 public interface ParserStrategy {
 
     /**
-     * Paresr the data
-     * @param data The data to parse
-     * @return The parsed data
+     * Parses a line of data
+     * @param line The data to parse
+     * @return The parsed line, or null if the line should be filtered out instead of included in the output
      */
-    List<String> parse(List<String> data);
+    String parse(String line);
 
 }

@@ -1,49 +1,25 @@
 package parsers;
 
-import java.util.List;
-
 public class Parser {
 
     protected ParserStrategy parserStrategy;
-    protected String fileName;
-    protected String outputFileName;
 
-    public Parser(String fileName, ParserStrategy parserStrategy, String outputFileName) {
-        this.fileName = fileName;
+    /**
+     * Creates a Parser object
+     * @param parserStrategy The parser strategy to use
+     */
+    public Parser(ParserStrategy parserStrategy) {
         this.parserStrategy = parserStrategy;
-        this.outputFileName = outputFileName;
     }
 
     /**
-     * Parse data with the currently held parsing strategy
-     * @param data
-     * @return
+     * Parse a line of data with the currently held parsing strategy
+     * @param line The line to parse
+     * @return The parsed line, or null or if the line should be filtered out and not included in the output
      */
-    public List<String> parse(List<String> data) {
-        return parserStrategy.parse(data);
+    public String parse(String line) {
+        return parserStrategy.parse(line);
     }
 
-
-    /**
-     * Get the file name that belongs to this parser
-     * @return The file name
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Set the new parser strategy
-     * @param strategy The new parser strategy to use
-     */
-    public void setParserStrategy(ParserStrategy strategy) {
-        this.parserStrategy = strategy;
-    }
-
-    /**
-     * Get the output file name intended for this parser
-     * @return File name to be used for the output file
-     */
-    public String getOutputFileName() { return outputFileName; }
 
 }

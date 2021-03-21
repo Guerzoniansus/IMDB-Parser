@@ -25,9 +25,12 @@ public class ParserProgram {
         //parseFile("title_ratings.tsv", "ratings.csv", new RatingsParser());
 
         // TitlesAndActors
-        parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
+        //parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
 
         //parseFile("test.tsv", "countries.csv", new TitleParser());
+
+        // Genres Parser
+        parseFile("title_basics.tsv", "genres.csv", new GenresParser());
     }
 
     /**

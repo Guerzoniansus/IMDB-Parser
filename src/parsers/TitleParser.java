@@ -27,9 +27,9 @@ public class TitleParser implements ParserStrategy {
         List<String> businessFile = FileLoader.getInstance().loadFile("business.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getBudget(businessFile), tableHeading); // add budget to filtered data
 
-//        List<String> plotFile = FileLoader.getInstance().loadFile("plot.list", new LoaderListStrategy());
-
-//        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getPlot(plotFile), tableHeading); // add budget to filtered data
+//      List<String> plotFile = FileLoader.getInstance().loadFile("plot.list", new LoaderListStrategy());
+//
+//        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getPlot(plotFile), tableHeading); // add plot to filtered data
 
 
         filteredData.replaceAll(line -> {

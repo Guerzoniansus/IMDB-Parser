@@ -27,7 +27,7 @@ public class ParserProgram {
         // TitlesAndActors
         //parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
 
-        parseFile("test.tsv", "countries.csv", new TitleParser());
+        parseFile("title_basics.tsv", "countries.csv", new TitleParser());
     }
 
     /**

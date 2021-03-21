@@ -8,21 +8,31 @@ import java.util.*;
 public class TitleParser implements ParserStrategy {
 
     List<String> countries;
+    List<String> MPAA;
 
     public TitleParser() {
         countries = new ArrayList<>();
+        MPAA = new ArrayList<>();
         ParserProgram.parseFile("countries.list", countries, new CountriesParser());
+        ParserProgram.parseFile("mpaa-ratings-reasons.list", MPAA, new MPAAParser());
+//        MPAA = filterMPAA(MPAA);
+//        for (String m:MPAA) {
+//            System.out.println(m);
+//        }
+
     }
 
 
     @Override
     public String parse(String line) {
+        for (String s : MPAA) {
+            System.out.println(s);
+        }
+
 
         // Hier komt je nieuwe code, je krijgt telkens een nieuwe regel
 
-
-
-        System.out.println("hallo");
+//        System.out.println("hallo");
 
 
         return null;
@@ -80,7 +90,7 @@ public class TitleParser implements ParserStrategy {
      * @param data list disorganized data
      * @return a organised list with title and MPAA rating per line
      */
-    private List<String> getMPAA(List<String> data) {
+    private List<String> filterMPAA(List<String> data) {
         List<String> MPAAList = new ArrayList<>();
 
         String MVregex = "MV:(.)"; // regex for splitting movie title
@@ -92,8 +102,8 @@ public class TitleParser implements ParserStrategy {
         for (String line : data) {
             String[] items;
             if (line.contains("MV:")) {
-                // if (!newLine.isEmpty())
-                    // MPAAList.add(newLine.toString());
+                 if (newLine.length() != 0)
+                     MPAAList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
                 String title = items[1].split(regexParentheses)[0];
                 newLine = new StringBuilder(title + "\t");
@@ -119,8 +129,8 @@ public class TitleParser implements ParserStrategy {
         for (String line : data) {
             String[] items;
             if (line.contains("MV:")) {
-                // if (!newLine.isEmpty())
-                    // plotList.add(newLine.toString());
+                if (newLine.length() != 0)
+                     plotList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
                 String title = items[1].split(regexParentheses)[0];
                 newLine = new StringBuilder(title + "\t");

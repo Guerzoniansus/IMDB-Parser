@@ -1,7 +1,5 @@
 package parsers;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MPAAParser implements ParserStrategy {
     String currentMovie;
@@ -18,16 +16,16 @@ public class MPAAParser implements ParserStrategy {
             return null;
         } else if (line.contains("RE:")) {
             String REregex = "RE:(.)"; // regex for splitting review
-            String rating = line.split(REregex)[1];
-            if (!checkingRating) {
-                checkingRating = true;
-                return currentMovie + "\t" + rating;
+            if (line.split(REregex)[1].split(" ").length > 1) {
+                String rating = line.split(REregex)[1].split(" ")[1];
+                if (!checkingRating) {
+                    checkingRating = true;
+                    if(rating.isEmpty())
+                        return null;
+                    return currentMovie + "\t" + rating;
+                }
             }
         }
         return null;
     }
 }
-
-/**
- regex "rated **"
- **/

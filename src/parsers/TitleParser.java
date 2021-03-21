@@ -14,6 +14,7 @@ public class TitleParser implements WholeFileParserStrategy {
     ArrayList<String> costs;
     ArrayList<String> plot;
 
+
     public TitleParser() {
         countries = new ArrayList<>();
         MPAA = new ArrayList<>();
@@ -23,8 +24,6 @@ public class TitleParser implements WholeFileParserStrategy {
         ParserProgram.parseFile("mpaa-ratings-reasons.list", MPAA, new MPAAParser());
         ParserProgram.parseFile("business.list", costs, new CostsParser());
         ParserProgram.parseFile("plot.list", plot, new PlotParser());
-
-
     }
 
     @Override
@@ -32,15 +31,13 @@ public class TitleParser implements WholeFileParserStrategy {
         List<String> data = inputFile.readAll();
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
         List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-        filteredData.set(0, filteredData.get(0) + "country\tMPAA\tcost\tplot"); // add columns
+        filteredData.set(0, filteredData.get(0) + "region\tMPAA\tcost\tplot"); // add columns
         String tableHeading = filteredData.get(0);
 
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), countries, tableHeading); // add countries to filtered data
-        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), MPAA, tableHeading); // add MPAA to filtered data
-
+       filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), MPAA, tableHeading); // add MPAA to filtered data
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), costs, tableHeading); // add budget to filtered data
-
-//        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), plot, tableHeading); // add plot to filtered data
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), plot, tableHeading); // add plot to filtered data
 
         filteredData.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
@@ -54,7 +51,6 @@ public class TitleParser implements WholeFileParserStrategy {
         });
         saveFile.addText((ArrayList<String>) filteredData);
         saveFile.save();
-
 
     }
 
@@ -112,6 +108,7 @@ public class TitleParser implements WholeFileParserStrategy {
                         checkedTitles.add(name);
                         String oldData = titles.get(name);
                         String newData = oldData + value + "\t";
+
                         titles.put(name, newData);
                     }
                 }

@@ -1,8 +1,5 @@
 package parsers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CostsParser implements ParserStrategy {
 
     String currentMovie;
@@ -22,6 +19,7 @@ public class CostsParser implements ParserStrategy {
             checkingRating = false;
             return null;
         }
+
         if (line.contains("BT:")) {
             String REregex = "BT:(.)"; // regex for splitting review
             String budget = line.split(REregex)[1]; // get string after BT:
@@ -30,17 +28,18 @@ public class CostsParser implements ParserStrategy {
             String amount = budget.split(" ")[1];
             if (!checkingRating) {
                 checkingRating = true;
-                return currentMovie + "\t" + convertCurrencyToUSD(currency, amount.replace(",", ""));
+                return currentMovie + convertCurrencyToUSD(currency, amount.replace(",", ""));
             }
         }
         return null;
     }
 
-
-    private Boolean movieHasBudget(String[] data) {
-        return (data.length > 1);
-    }
-
+    /**
+     * Convert currency to USD
+     * @param currency The currency
+     * @param amount The amount of money
+     * @return amount in USD
+     */
     private String convertCurrencyToUSD(String currency, String amount) {
 
         String newCurrency;
@@ -65,9 +64,8 @@ public class CostsParser implements ParserStrategy {
                 newCurrency = String.valueOf(Double.parseDouble(amount) * 1.39);
                 break;
             default:
-                newCurrency = "\\n";
+                newCurrency = "\\N";
         }
-        ;
 
         return newCurrency;
     }

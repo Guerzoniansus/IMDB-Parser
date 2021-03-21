@@ -4,30 +4,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlotParser implements ParserStrategy {
-
     String currentMovie;
-    boolean checkingRating = false;
+    String currentPlot;
+
+    boolean checkingPlot;
+
+    public PlotParser() {
+        currentMovie = null;
+        currentPlot = "";
+
+        checkingPlot = false;
+    }
 
 
     @Override
     public String parse(String line) {
 
         if (line.contains("MV:")) {
+
+            checkingPlot = false;
+
             String MVregex = "MV:(.)"; // regex for splitting movie title
             String regexParentheses = " \\W\\S"; // regex for removing (year)
             String[] items = line.split(MVregex); // Splits per tab
+
             currentMovie = items[1].split(regexParentheses)[0];
-            checkingRating = false;
+            currentPlot = "";
+
+
             return null;
-        } else if (line.contains("PL:")) {
+        }
+
+        else if (line.contains("PL:")) {
+
+            checkingPlot = true;
+
             String PLregex = "PL:(.)"; // regex for splitting review
+
+
             if (line.split(PLregex).length > 1) {
-                String rating = line.split(PLregex)[1];
-                if (!checkingRating) {
-                    checkingRating = true;
-                    return currentMovie + "\t" + rating;
-                }
+                String plot = line.split(PLregex)[1];
+
+                currentPlot += plot;
             }
+        }
+        else {
+            if (checkingPlot) {
+                checkingPlot = false;
+                return currentMovie + "\t" + currentPlot;
+            }
+
         }
 
 

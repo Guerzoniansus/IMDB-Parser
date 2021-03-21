@@ -13,7 +13,7 @@ public class ActorFilterParser implements ParserStrategy {
 
         String[] items = line.split("\t");
 
-        if (! line.contains("actor") || ! line.contains("actress")) {
+        if ((line.contains("actor") || line.contains("actress")) == false) {
             return null;
 
         }

@@ -25,12 +25,12 @@ public class ActorParser implements ParserStrategy{
 
 
 
+
         actorsList.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab
 
             return String.join(",", items);
         });
-
         return actorsList;
     }
 }

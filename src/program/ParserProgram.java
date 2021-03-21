@@ -19,14 +19,16 @@ public class ParserProgram {
     public void parseEverything() {
 
         // Actors.csv
-//        parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
+        //parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
 
         // Ratings
         //parseFile("title_ratings.tsv", "ratings.csv", new RatingsParser());
 
         // TitlesAndActors
-        parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser());
-        parseFile("title_basics.tsv", "title_basics.csv", new TitleParser());
+        //parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser());
+
+        // Title
+        //parseFile("title_basics.tsv", "title.csv", new TitleParser());
 
         //parseFile("test.tsv", "countries.csv", new TitleParser());
     }
@@ -36,7 +38,6 @@ public class ParserProgram {
      * @param fileName The file name to parse
      * @param outputData The list in which to insert the parsed data
      * @param parser The parser strategy to use
-     * @return The parsed data
      */
     public static void parseFile(String fileName, Collection<String> outputData, ParserStrategy parser) {
 

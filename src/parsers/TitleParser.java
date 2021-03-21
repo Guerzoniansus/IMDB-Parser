@@ -20,7 +20,7 @@ public class TitleParser implements ParserStrategy {
 
         // Hier komt je nieuwe code, je krijgt telkens een nieuwe regel
 
-        
+
 
         return null;
     }

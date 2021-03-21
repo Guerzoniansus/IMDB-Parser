@@ -19,15 +19,15 @@ public class ParserProgram {
     public void parseEverything() {
 
         // Actors.csv
-        //parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
+        parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
 
         // Ratings
         //parseFile("title_ratings.tsv", "ratings.csv", new RatingsParser());
 
         // TitlesAndActors
-        //parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
+        parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
 
-        parseFile("test.tsv", "countries.csv", new TitleParser());
+        //parseFile("test.tsv", "countries.csv", new TitleParser());
     }
 
     /**
@@ -90,5 +90,18 @@ public class ParserProgram {
     }
 
 
+    /**
+     * Parse a whole file at once instead of line by line
+     * @param fileName Input file name
+     * @param outputFileName Output file name
+     * @param parser A WholeFileParser strategy
+     */
+    private static void parseFile(String fileName, String outputFileName, WholeFileParserStrategy parser) {
+        System.out.println("Trying to parse " + fileName);
+        DataFile inputFile = new DataFile(fileName);
+        SaveFile saveFile = new SaveFile(outputFileName);
+
+        parser.parse(inputFile, saveFile);
+    }
 
 }

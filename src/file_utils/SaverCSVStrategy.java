@@ -10,9 +10,6 @@ public class SaverCSVStrategy implements SaverStrategy {
     @Override
     public void saveFile(String fileName, List<String> data) {
 
-        // Replace .tsv with .csv
-        fileName = fileName.split("\\.")[0];
-        fileName = fileName + ".csv";
 
         try {
             FileWriter  writer = new FileWriter(filePath + fileName);

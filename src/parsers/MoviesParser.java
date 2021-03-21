@@ -1,9 +1,8 @@
 package parsers;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesParser implements ParserStrategy {
+public class MoviesParser implements OldParserStrategy {
 
     @Override
     public List<String> parse(List<String> data) {

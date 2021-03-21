@@ -1,9 +1,8 @@
 package parsers;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class RatingsParser implements ParserStrategy {
+public class RatingsParser implements OldParserStrategy {
 
 
     @Override

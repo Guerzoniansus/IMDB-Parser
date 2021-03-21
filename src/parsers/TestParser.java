@@ -5,7 +5,7 @@ import file_utils.LoaderTSVStrategy;
 
 import java.util.List;
 
-public class TestParser implements ParserStrategy {
+public class TestParser implements OldParserStrategy {
 
 
     @Override

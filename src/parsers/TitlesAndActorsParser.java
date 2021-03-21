@@ -1,52 +1,48 @@
 package parsers;
 
+import javax.naming.NameParser;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TitlesAndActorsParser implements ParserStrategy {
 
+    private final int PERSON_ID_COL_INDEX = 0;
+    private final int TITLE_ID_COL_INDEX = 5;
+
+    boolean checkFirstLine;
+
+    public TitlesAndActorsParser() {
+        checkFirstLine = false;
+    }
 
     @Override
     public String parse(String line) {
 
-        // Opmerking voor Kevin:
-        // Je returnt 1 String
-        // Maar aangezien 1 acteur in meerdere films speelt,
-        // moet je dus eigenlijk meerdere regels returnen.
-        // Dat kun je zo doen:
-
-        // return regel1 + "\n" + regel2 + "\n" + "regel3"
-        // De \n maakt er dan een nieuwe regel van
-
-        return null;
-    }
-
-    // Oude code van Kevin
-
-    /*
-    @Override
-    public List<String> parse(List<String> data) {
-        List<String> filteredData = new ArrayList<>();
-
-        //if data[i] does not contain actor or actress remove line from data.
-        for (String str : data) {
-            if(str.contains("actor") || str.contains("actress"))
-                filteredData.add(str);
+        if (!checkFirstLine) {
+            checkFirstLine = true;
+            return replaceColumnNames();
         }
 
-        filteredData.replaceAll(line -> {
-            String[] items = line.split("\t"); // Splits per tab
+        if ((line.contains("actor") || line.contains("actress")) == false) {
+            return null;
+        }
 
-            for (int i = 0; i < items.length; i++) {
-                if (items[i].contains(",")) {
-                    items[i] = "\"" + items[i] + "\"";
-                }
-            }
+        String[] items = line.split("\t");
+        String PersonID = items[PERSON_ID_COL_INDEX];
 
-            return String.join(",", items);
-        });
+        String[] FilmIDs = items[TITLE_ID_COL_INDEX].split(",");
 
-        return filteredData;
+        String returnString = "";
+
+
+        for (String TitleID : FilmIDs) {
+            returnString += PersonID + "," + TitleID + "\n";
+        }
+
+        return returnString;
     }
-     */
+
+    private String replaceColumnNames() {
+        return "actorID" + "," + "titleID";
+    }
 }

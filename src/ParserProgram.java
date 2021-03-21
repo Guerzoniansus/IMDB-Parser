@@ -1,7 +1,8 @@
 import file_utils.*;
+import parsers.ActorParser;
 import parsers.Parser;
+import parsers.RatingsParser;
 import parsers.TestParser;
-import parsers.TitleParser;
 
 
 import java.util.ArrayList;
@@ -21,6 +22,10 @@ public class ParserProgram {
 
         parsers = new ArrayList<>();
 
+        //parsers.add(new Parser("test.tsv", new TestParser(), "test.csv"));
+        //parsers.add(new Parser("test.tsv", new TestParser()));
+        //parsers.add(new Parser("ratings.tsv", new RatingsParser()));
+        parsers.add(new Parser("title_principals.tsv", new ActorParser(), "title_principals.csv"));
 //        parsers.add(new Parser("test.tsv", new TestParser()));
 //        parsers.add(new Parser("movie.tsv", new MoviesParser()));
 //        parsers.add(new Parser("actors.tsv", new ActorsParser()));

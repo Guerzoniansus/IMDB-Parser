@@ -2,9 +2,11 @@ package parsers;
 
 import java.util.List;
 
-public class MoviesParser implements OldParserStrategy {
+public class MoviesParser  {
 
-    @Override
+
+    // Oud bestand? Geen idee waar dit voor is
+
     public List<String> parse(List<String> data) {
         data.replaceAll(line -> {
             String[] items = line.split("\t"); // Splits per tab

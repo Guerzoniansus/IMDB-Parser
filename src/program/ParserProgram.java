@@ -13,32 +13,21 @@ import java.util.function.Consumer;
 
 public class ParserProgram {
 
-    private FileLoader loader;
-    private FileSaver saver;
-
-    private List<OldParser> oldParsers;
-
-    public ParserProgram() {
-        loader = FileLoader.getInstance();
-        saver = FileSaver.getInstance();
-
-        oldParsers = new ArrayList<>();
-
-        //oldParsers.add(new OldParser("test.tsv", new TestParser(), "test.csv"));
-        //oldParsers.add(new OldParser("test.tsv", new TestParser()));
-        //oldParsers.add(new OldParser("ratings.tsv", new RatingsParser()));
-        //oldParsers.add(new OldParser("title_principals.tsv", new ActorFilterParser(), "actors.csv"));
-
-        // oldParsers.add(new OldParser("ratings.tsv", new RatingsParser()));
-        // oldParsers.add(new OldParser("movies.tsv", new MoviesParser()));
-
-    }
-
     /**
      * Parse all files
      */
     public void parseEverything() {
-        parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
+
+        // Actors.csv
+        //parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
+
+        // Ratings
+        //parseFile("title_ratings.tsv", "ratings.csv", new RatingsParser());
+
+        // TitlesAndActors
+        //parseFile("name.basics", "titlesandactors.csv", new TitlesAndActorsParser());
+
+        parseFile("test.tsv", "countries.csv", new TitleParser());
     }
 
     /**

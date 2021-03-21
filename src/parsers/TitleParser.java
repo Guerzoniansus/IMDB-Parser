@@ -1,14 +1,36 @@
 package parsers;
 
-import file_utils.FileLoader;
-import file_utils.LoaderListStrategy;
+
+import program.ParserProgram;
 
 import java.util.*;
 
 public class TitleParser implements ParserStrategy {
 
+    List<String> countries;
+
+    public TitleParser() {
+        countries = new ArrayList<>();
+        ParserProgram.parseFile("countries.list", countries, new CountriesParser());
+    }
+
 
     @Override
+    public String parse(String line) {
+
+        // Hier komt je nieuwe code, je krijgt telkens een nieuwe regel
+
+
+
+        System.out.println("hallo");
+
+
+        return null;
+    }
+
+
+    // Oude code hieronder
+
     public List<String> parse(List<String> data) {
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
         List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
@@ -16,16 +38,22 @@ public class TitleParser implements ParserStrategy {
 
         String tableHeading = filteredData.get(0);
 
+        /*
         List<String> countryFile = FileLoader.getInstance().loadFile("countries.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMovieAndCountry(countryFile), tableHeading); // add countries to filtered data
 
+        */
 
+
+
+        /*
         List<String> MPAAFile = FileLoader.getInstance().loadFile("mpaa-ratings-reasons.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getMPAA(MPAAFile), tableHeading); // add MPAA to filtered data
 
 
         List<String> businessFile = FileLoader.getInstance().loadFile("business.list", new LoaderListStrategy());
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), getBudget(businessFile), tableHeading); // add budget to filtered data
+         */
 
 //      List<String> plotFile = FileLoader.getInstance().loadFile("plot.list", new LoaderListStrategy());
 //
@@ -64,8 +92,8 @@ public class TitleParser implements ParserStrategy {
         for (String line : data) {
             String[] items;
             if (line.contains("MV:")) {
-                if (!newLine.isEmpty())
-                    MPAAList.add(newLine.toString());
+                // if (!newLine.isEmpty())
+                    // MPAAList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
                 String title = items[1].split(regexParentheses)[0];
                 newLine = new StringBuilder(title + "\t");
@@ -91,8 +119,8 @@ public class TitleParser implements ParserStrategy {
         for (String line : data) {
             String[] items;
             if (line.contains("MV:")) {
-                if (!newLine.isEmpty())
-                    plotList.add(newLine.toString());
+                // if (!newLine.isEmpty())
+                    // plotList.add(newLine.toString());
                 items = line.split(MVregex); // Splits per tab
                 String title = items[1].split(regexParentheses)[0];
                 newLine = new StringBuilder(title + "\t");
@@ -126,8 +154,8 @@ public class TitleParser implements ParserStrategy {
             String[] items;
 
             if (line.contains("MV:")) {
-                if (!newLine.isEmpty())
-                    budgetList.add(newLine.toString());
+                // if (!newLine.isEmpty())
+                    // budgetList.add(newLine.toString());
 
                 items = line.split(MVregex); // Split string on mv
                 String title = items[1].split(regexParentheses)[0]; // get string between "MV: " and  "("
@@ -158,15 +186,26 @@ public class TitleParser implements ParserStrategy {
     }
 
     private String convertCurrencyToUSD(String currency, String amount) {
-        return switch (currency) {
-            case "USD" -> amount;
-            case "AUD" -> String.valueOf(Double.parseDouble(amount) * 0.77);
-            case "EUR" -> String.valueOf(Double.parseDouble(amount) * 1.90);
-            case "CAD" -> String.valueOf(Double.parseDouble(amount) * 0.80);
-            case "INR" -> String.valueOf(Double.parseDouble(amount) * 0.014);
-            case "GBP" -> String.valueOf(Double.parseDouble(amount) * 1.39);
-            default -> "\\n";
+
+        String newCurrency;
+
+        switch (currency) {
+            case "USD": newCurrency = amount;
+                break;
+            case "AUD": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.77);
+                break;
+            case "EUR": newCurrency = String.valueOf(Double.parseDouble(amount) * 1.90);
+                break;
+            case "CAD": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.80);
+                break;
+            case "INR": newCurrency = String.valueOf(Double.parseDouble(amount) * 0.014);
+                break;
+            case "GBP": newCurrency = String.valueOf(Double.parseDouble(amount) * 1.39);
+                break;
+            default: newCurrency = "\\n";
         };
+
+        return newCurrency;
     }
 
     /**

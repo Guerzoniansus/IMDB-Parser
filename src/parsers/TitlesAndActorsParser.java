@@ -3,7 +3,27 @@ package parsers;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActorsParser implements ParserStrategy {
+public class TitlesAndActorsParser implements ParserStrategy {
+
+
+    @Override
+    public String parse(String line) {
+
+        // Opmerking voor Kevin:
+        // Je returnt 1 String
+        // Maar aangezien 1 acteur in meerdere films speelt,
+        // moet je dus eigenlijk meerdere regels returnen.
+        // Dat kun je zo doen:
+
+        // return regel1 + "\n" + regel2 + "\n" + "regel3"
+        // De \n maakt er dan een nieuwe regel van
+
+        return null;
+    }
+
+    // Oude code van Kevin
+
+    /*
     @Override
     public List<String> parse(List<String> data) {
         List<String> filteredData = new ArrayList<>();
@@ -28,4 +48,5 @@ public class ActorsParser implements ParserStrategy {
 
         return filteredData;
     }
+     */
 }

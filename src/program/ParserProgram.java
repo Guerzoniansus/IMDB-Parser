@@ -19,16 +19,18 @@ public class ParserProgram {
     public void parseEverything() {
 
         // Actors.csv
-        //parseFile("name_basics.tsv", "actors.csv", new ActorNameParser());
-
-        // Ratings
-        //parseFile("title_ratings.tsv", "ratings.csv", new RatingsParser());
+        //parseFile("name_basics.tsv", "actors.csv", new ActorNameParser(), false);
 
         // TitlesAndActors
-        //parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser());
+        //parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser(), false);
+
+        String titleFileName = "title.csv";
 
         // Title
-        //parseFile("title_basics.tsv", "title.csv", new TitleParser());
+        parseFile("title_basics.tsv", titleFileName, new TitleParser());
+
+        // Ratings
+        parseFile(titleFileName, "title.csv", new RatingsParser(), false);
 
         //parseFile("test.tsv", "countries.csv", new TitleParser());
     }
@@ -55,8 +57,9 @@ public class ParserProgram {
      * @param fileName The file to parse
      * @param outputFileName The name for the output file
      * @param parser The parser strategy to use
+     * @param copyOutputToInputDirectory Whether a copy of the output should be put in the input folder
      */
-    public static void parseFile(String fileName, String outputFileName, ParserStrategy parser) {
+    public static void parseFile(String fileName, String outputFileName, ParserStrategy parser, boolean copyOutputToInputDirectory) {
         SaveFile saveFile = new SaveFile(outputFileName);
 
         doParseProcess(fileName, parser, parsedLine -> {
@@ -66,7 +69,7 @@ public class ParserProgram {
             }
         });
 
-        saveFile.save();
+        saveFile.save(copyOutputToInputDirectory);
     }
 
     /**

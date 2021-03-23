@@ -50,7 +50,7 @@ public class TitleParser implements WholeFileParserStrategy {
             return String.join((","), items);
         });
         saveFile.addText((ArrayList<String>) filteredData);
-        saveFile.save();
+        saveFile.save(true);
 
     }
 

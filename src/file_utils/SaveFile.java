@@ -1,7 +1,10 @@
 package file_utils;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +12,8 @@ import java.util.ArrayList;
  */
 public class SaveFile {
 
-    private final String filePath = "output/";
+    private final String inputFilePath = "input-files/";
+    private final String outputFilePath = "output/";
     private final String fileName;
 
     FileWriter writer;
@@ -22,7 +26,7 @@ public class SaveFile {
         this.fileName = fileName;
 
         try {
-            writer = new FileWriter(filePath + fileName);
+            writer = new FileWriter(outputFilePath + fileName);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,17 +74,22 @@ public class SaveFile {
 
     /**
      * Closes the file and saves it
+     * @param addCopyToInputDirectory Whether or not a copy of the saved file should be placed in the input directory
      */
-    public void save() {
+    public void save(boolean addCopyToInputDirectory) {
         try {
             writer.flush();
             writer.close();
+
+            if (addCopyToInputDirectory == true) {
+                Files.copy(new File(outputFilePath + fileName).toPath(),
+                        new File(inputFilePath + fileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
         }
 
         catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 }

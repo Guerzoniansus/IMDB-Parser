@@ -107,6 +107,8 @@ public class ParserProgram {
         SaveFile saveFile = new SaveFile(outputFileName);
 
         parser.parse(inputFile, saveFile);
+
+        System.out.println("Finished parsing " + fileName);
     }
 
 }

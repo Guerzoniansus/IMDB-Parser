@@ -43,7 +43,7 @@ public class ActorNameParser implements ParserStrategy {
         }
 
         else {
-            String name = items[NAME_COL_INDEX];
+            String name = items[NAME_COL_INDEX].replace(",", "");
 
             return ID + "," + name;
         }

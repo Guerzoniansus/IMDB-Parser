@@ -43,10 +43,10 @@ public class RatingsParser implements ParserStrategy {
             return line;
         }
 
-        String ID = line.split(",")[ID_COL_INDEX];
+        String ID = line.split(";")[ID_COL_INDEX];
 
         if (IDandRatings.containsKey(ID)) {
-            return line + "," + IDandRatings.get(ID);
+            return line + ";" + IDandRatings.get(ID);
         }
 
         else {

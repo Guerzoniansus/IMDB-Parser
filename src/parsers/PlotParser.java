@@ -45,7 +45,7 @@ public class PlotParser implements ParserStrategy {
             if (line.split(PLregex).length > 1) {
                 String plot = line.split(PLregex)[1];
 
-                currentPlot += plot;
+                currentPlot += plot.replace("\"", "").replace("'", "").replace(";", "");
             }
         }
         else {

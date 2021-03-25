@@ -32,6 +32,9 @@ public class ParserProgram {
         // Ratings
         parseFile(titleFileName, "title.csv", new RatingsParser(), false);
 
+        parseFile("title_basics.tsv", "genres.csv", new GenresParser(), true);
+
+
         //parseFile("test.tsv", "countries.csv", new TitleParser());
     }
 

@@ -30,6 +30,9 @@ public class GenresParser implements ParserStrategy {
         String returnString = "";
 
         for (String genre : genres) {
+            if (genre.equals("\\N"))
+                return null;
+
             returnString += ID + "," + genre + "\n";
         }
 

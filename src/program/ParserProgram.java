@@ -19,10 +19,10 @@ public class ParserProgram {
     public void parseEverything() {
 
         // Actors.csv
-        parseFile("name_basics.tsv", "actors.csv", new ActorNameParser(), false);
+//        parseFile("name_basics.tsv", "actors.csv", new ActorNameParser(), false);
 
         // TitlesAndActors
-        //parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser(), false);
+//        parseFile("name_basics.tsv", "titlesandactors.csv", new TitlesAndActorsParser(), false);
 
 //        String titleFileName = "title.csv";
 //
@@ -32,7 +32,7 @@ public class ParserProgram {
 //        // Ratings
 //        parseFile(titleFileName, "title.csv", new RatingsParser(), false);
 //
-//        parseFile("title_basics.tsv", "genres.csv", new GenresParser(), true);
+        parseFile("title_basics.tsv", "genres.csv", new GenresParser(), true);
 
 
         //parseFile("test.tsv", "countries.csv", new TitleParser());

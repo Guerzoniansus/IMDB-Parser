@@ -20,6 +20,7 @@ public class TitleParser implements WholeFileParserStrategy {
         MPAA = new ArrayList<>();
         costs = new ArrayList<>();
         plot = new ArrayList<>();
+
         ParserProgram.parseFile("countries.list", countries, new CountriesParser());
         ParserProgram.parseFile("mpaa-ratings-reasons.list", MPAA, new MPAAParser());
         ParserProgram.parseFile("business.list", costs, new CostsParser());
@@ -30,12 +31,14 @@ public class TitleParser implements WholeFileParserStrategy {
     public void parse(DataFile inputFile, SaveFile saveFile) {
         List<String> data = inputFile.readAll();
         data.set(0, data.get(0).replace("tconst", "titleID")); // replace tconst with titleID
-        List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
-        filteredData.set(0, filteredData.get(0) + "region\tMPAA\tcost\tplot"); // add columns
-        String tableHeading = filteredData.get(0);
 
+        List<String> filteredData = getListWithoutGenre(getListWithoutSeries(data)); // remove genre and series from data
+
+        filteredData.set(0, filteredData.get(0) + "region\tMPAA\tcost\tplot"); // add all headings
+
+        String tableHeading = filteredData.get(0);
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), countries, tableHeading); // add countries to filtered data
-       filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), MPAA, tableHeading); // add MPAA to filtered data
+        filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), MPAA, tableHeading); // add MPAA to filtered data
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), costs, tableHeading); // add budget to filtered data
         filteredData = mergeTitlesWithData(getTitleHashmap(filteredData), plot, tableHeading); // add plot to filtered data
 
@@ -95,28 +98,22 @@ public class TitleParser implements WholeFileParserStrategy {
      */
     private List<String> mergeTitlesWithData(HashMap<String, String> titles, List<String> data, String tableHeading) {
         HashSet<String> checkedTitles = new HashSet<>();
-        int lineCount = 0;
         for (String line : data) {
-            if (lineCount > 14) { // data starts at line 15
-                String name = line.split("\t")[0];
-                String value = line.split("\t")[1];
+            String name = line.split("\t")[0]; // movie name
+            String value = line.split("\t")[1]; //movie values (price, mpaa, plot etc..)
 
-                if (titles.containsKey(name)) {
-                    if (checkedTitles.contains(name))
-                        continue;
-                    else {
-                        checkedTitles.add(name);
-                        String oldData = titles.get(name);
-                        String newData = oldData + value + "\t";
 
-                        titles.put(name, newData);
-                    }
+            if (titles.containsKey(name)) {
+                if (!checkedTitles.contains(name)) {
+                    checkedTitles.add(name);
+                    String oldData = titles.get(name);
+                    String newData = oldData + value + "\t";
+                    titles.put(name, newData);
                 }
             }
-            if (lineCount <= 14)
-                lineCount++;
         }
 
+        //add null values to titles
         titles.forEach((index, value) -> {
             if (!checkedTitles.contains(index)) {
                 checkedTitles.add(index);
@@ -142,11 +139,11 @@ public class TitleParser implements WholeFileParserStrategy {
         int lineCount = 0;
         for (String line : data) {
             if (lineCount > 0) {
-                String name = line.split("\t")[3];
+                String name = line.split("\t")[3]; // get primary name from line
                 result.put(name, line);
             }
             if (lineCount < 1)
-                lineCount++;
+                lineCount++;// skip heading
         }
         return result;
     }
